@@ -1,0 +1,1 @@
+CREATE POLICY "Anyone can delete lessons" ON public.lessons FOR DELETE USING (true);
