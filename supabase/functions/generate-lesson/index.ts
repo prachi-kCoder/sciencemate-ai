@@ -16,7 +16,8 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-    const systemPrompt = `You are an expert K-12 science and math tutor. Generate a structured lesson for grade ${gradeLevel} students.
+    const levelLabel = gradeLevel <= 12 ? `grade ${gradeLevel}` : gradeLevel === 13 ? "AP / College Prep" : "Undergraduate";
+    const systemPrompt = `You are an expert science and math tutor covering K-12 through college prep. Generate a structured lesson for ${levelLabel} students.
 
 IMPORTANT: Return ONLY valid JSON, no markdown, no code fences.
 
