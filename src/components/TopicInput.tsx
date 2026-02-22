@@ -60,12 +60,14 @@ const TopicInput: React.FC<TopicInputProps> = ({ onGenerate, isLoading }) => {
             Grade:
           </div>
           <Select value={gradeLevel} onValueChange={setGradeLevel}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-44">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {Array.from({ length: 8 }, (_, i) => i + 5).map((g) => (
-                <SelectItem key={g} value={g.toString()}>Grade {g}</SelectItem>
+              {Array.from({ length: 14 }, (_, i) => i + 1).map((g) => (
+                <SelectItem key={g} value={g.toString()}>
+                  {g <= 12 ? `Grade ${g}` : g === 13 ? "AP / College Prep" : "Undergraduate"}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>

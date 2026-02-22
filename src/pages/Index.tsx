@@ -123,7 +123,7 @@ const Index = () => {
             </div>
             <div>
               <h1 className="font-bold text-sm">AI Live Tutor</h1>
-              <p className="text-xs text-muted-foreground">K-12 Science & Math</p>
+              <p className="text-xs text-muted-foreground">K-12 & College Prep</p>
             </div>
           </div>
 
