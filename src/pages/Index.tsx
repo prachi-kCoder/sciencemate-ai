@@ -22,13 +22,12 @@ const Index = () => {
   const [chatOpen, setChatOpen] = useState(false);
   const { toast } = useToast();
 
-  // Fetch recent lessons
   useEffect(() => {
     fetchLessons();
   }, []);
 
   const fetchLessons = async () => {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from("lessons")
       .select("*")
       .order("created_at", { ascending: false })
@@ -76,7 +75,7 @@ const Index = () => {
       setView("slides");
       fetchLessons();
 
-      toast({ title: "Lesson ready! 🎉", description: `"${topic}" — ${typed.slides.length} slides generated` });
+      toast({ title: "Lesson ready!", description: `"${topic}" — ${typed.slides.length} slides generated` });
     } catch (e: any) {
       toast({ title: "Error", description: e.message, variant: "destructive" });
     } finally {
@@ -107,6 +106,14 @@ const Index = () => {
     }
   };
 
+  const gradeLevelLabel = currentLesson
+    ? currentLesson.grade_level <= 12
+      ? `Grade ${currentLesson.grade_level}`
+      : currentLesson.grade_level === 13
+      ? "AP / College Prep"
+      : "Undergraduate"
+    : "";
+
   return (
     <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar */}
@@ -117,13 +124,13 @@ const Index = () => {
       >
         <div className="flex h-full flex-col w-72">
           {/* Sidebar header */}
-          <div className="flex items-center gap-2 p-4 border-b">
-            <div className="rounded-lg p-1.5" style={{ background: "var(--tutor-gradient)" }}>
+          <div className="flex items-center gap-3 p-4 border-b">
+            <div className="rounded-lg p-2" style={{ background: "var(--tutor-gradient)" }}>
               <GraduationCap className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="font-bold text-sm">AI Live Tutor</h1>
-              <p className="text-xs text-muted-foreground">K-12 & College Prep</p>
+              <h1 className="font-bold text-sm tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>AI Live Tutor</h1>
+              <p className="text-[11px] text-muted-foreground">K-12 & College Prep</p>
             </div>
           </div>
 
@@ -131,7 +138,7 @@ const Index = () => {
           <div className="p-3">
             <Button
               variant="outline"
-              className="w-full justify-start gap-2"
+              className="w-full justify-start gap-2 text-sm"
               onClick={() => {
                 setView("input");
                 setCurrentLesson(null);
@@ -145,7 +152,7 @@ const Index = () => {
           {/* Recent lessons */}
           <div className="flex-1 overflow-hidden">
             <div className="px-4 py-2">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <h2 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
                 Recent Lessons
               </h2>
             </div>
@@ -161,21 +168,28 @@ const Index = () => {
       {/* Main content */}
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="flex items-center gap-3 border-b px-4 py-2.5 bg-card">
+        <header className="flex items-center gap-3 border-b px-4 py-2.5 bg-card/80 backdrop-blur-sm">
           <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)} className="h-8 w-8">
             {sidebarOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeft className="h-4 w-4" />}
           </Button>
           {currentLesson && (
             <>
-              <span className="text-sm font-medium">{currentLesson.topic}</span>
-              <span className="rounded bg-primary/10 text-primary px-2 py-0.5 text-xs font-medium">
-                {currentLesson.subject}
-              </span>
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-sm font-semibold truncate" style={{ fontFamily: 'var(--font-display)' }}>
+                  {currentLesson.topic}
+                </span>
+                <span className="rounded-md bg-primary/10 text-primary px-2 py-0.5 text-[11px] font-semibold shrink-0">
+                  {currentLesson.subject}
+                </span>
+                <span className="rounded-md bg-secondary/10 text-secondary px-2 py-0.5 text-[11px] font-semibold shrink-0">
+                  {gradeLevelLabel}
+                </span>
+              </div>
               {view === "slides" && (
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="ml-auto text-xs"
+                  className="ml-auto text-xs font-medium"
                   onClick={() => setView("assessment")}
                 >
                   Take Quiz →
@@ -185,7 +199,7 @@ const Index = () => {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="ml-auto text-xs"
+                  className="ml-auto text-xs font-medium"
                   onClick={() => setView("slides")}
                 >
                   ← Back to Slides
@@ -218,7 +232,7 @@ const Index = () => {
         </div>
       </main>
 
-      {/* Doubt Chat (only in slides/assessment view) */}
+      {/* Doubt Chat */}
       {currentLesson && (view === "slides" || view === "assessment") && (
         <DoubtChat
           currentSlide={currentLesson.slides[currentSlideIndex] || null}

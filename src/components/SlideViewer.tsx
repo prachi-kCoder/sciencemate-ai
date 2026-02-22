@@ -1,6 +1,7 @@
 import React from "react";
-import { ChevronLeft, ChevronRight, Image } from "lucide-react";
+import { ChevronLeft, ChevronRight, Image, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import LatexRenderer from "@/components/LatexRenderer";
 import type { Slide } from "@/types/lesson";
@@ -15,97 +16,148 @@ const SlideViewer: React.FC<SlideViewerProps> = ({ slides, currentIndex, onNavig
   const slide = slides[currentIndex];
   if (!slide) return null;
 
+  const progress = ((currentIndex + 1) / slides.length) * 100;
+
   return (
-    <div className="flex flex-col h-full">
-      {/* Slide content */}
-      <div className="flex-1 overflow-y-auto p-6 md:p-10">
-        <div className="max-w-3xl mx-auto">
-          {/* Slide number */}
-          <div className="text-sm font-medium text-muted-foreground mb-2">
-            Slide {currentIndex + 1} of {slides.length}
+    <div className="flex h-full">
+      {/* Table of contents sidebar */}
+      <div className="hidden lg:flex flex-col w-64 border-r bg-card/50 flex-shrink-0">
+        <div className="p-4 border-b">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            <BookOpen className="h-3.5 w-3.5" />
+            Contents
           </div>
-
-          {/* Heading */}
-          <h2 className="text-2xl md:text-3xl font-bold mb-6">
-            <LatexRenderer>{slide.heading}</LatexRenderer>
-          </h2>
-
-          {/* Body */}
-          <div className="text-base md:text-lg leading-relaxed text-foreground/90 mb-8">
-            <LatexRenderer>{slide.body}</LatexRenderer>
-          </div>
-
-          {/* Key Terms */}
-          {slide.keyTerms?.length > 0 && (
-            <div className="mb-8">
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-                Key Terms
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {slide.keyTerms.map((kt, i) => (
-                  <Tooltip key={i}>
-                    <TooltipTrigger asChild>
-                      <span className="inline-flex items-center rounded-lg bg-primary/10 px-3 py-1.5 text-sm font-semibold text-primary cursor-help border border-primary/20">
-                        <LatexRenderer>{kt.term}</LatexRenderer>
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent side="bottom" className="max-w-xs text-sm">
-                      <LatexRenderer>{kt.definition}</LatexRenderer>
-                    </TooltipContent>
-                  </Tooltip>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Visual Prompt */}
-          {slide.visualPrompt && (
-            <div className="rounded-xl border-2 border-dashed border-border bg-muted/50 p-6 flex items-center gap-4">
-              <div className="flex-shrink-0 rounded-lg bg-secondary/10 p-3">
-                <Image className="h-6 w-6 text-secondary" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground mb-1">Visual Aid</p>
-                <p className="text-sm text-foreground/70">{slide.visualPrompt}</p>
-              </div>
-            </div>
-          )}
         </div>
-      </div>
-
-      {/* Navigation */}
-      <div className="border-t bg-card p-4 flex items-center justify-between">
-        <Button
-          variant="outline"
-          onClick={() => onNavigate(currentIndex - 1)}
-          disabled={currentIndex === 0}
-          className="gap-2"
-        >
-          <ChevronLeft className="h-4 w-4" /> Previous
-        </Button>
-
-        {/* Progress dots */}
-        <div className="flex gap-1.5">
-          {slides.map((_, i) => (
+        <div className="flex-1 overflow-y-auto p-2">
+          {slides.map((s, i) => (
             <button
               key={i}
               onClick={() => onNavigate(i)}
-              className={`h-2 rounded-full transition-all ${
+              className={`w-full text-left rounded-lg px-3 py-2.5 text-sm transition-all mb-0.5 ${
                 i === currentIndex
-                  ? "w-6 bg-primary"
-                  : "w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                  ? "bg-primary/10 text-primary font-medium border border-primary/20"
+                  : i < currentIndex
+                  ? "text-muted-foreground hover:bg-muted"
+                  : "text-foreground/70 hover:bg-muted"
               }`}
-            />
+            >
+              <span className="flex items-start gap-2.5">
+                <span className={`flex-shrink-0 h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-bold mt-0.5 ${
+                  i < currentIndex
+                    ? "bg-secondary/20 text-secondary"
+                    : i === currentIndex
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted text-muted-foreground"
+                }`}>
+                  {i < currentIndex ? "✓" : i + 1}
+                </span>
+                <span className="line-clamp-2 leading-snug">{s.heading}</span>
+              </span>
+            </button>
           ))}
         </div>
+      </div>
 
-        <Button
-          onClick={() => onNavigate(currentIndex + 1)}
-          disabled={currentIndex === slides.length - 1}
-          className="gap-2"
-        >
-          Next <ChevronRight className="h-4 w-4" />
-        </Button>
+      {/* Main slide area */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Progress bar */}
+        <div className="px-6 pt-4 pb-0">
+          <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
+            <span className="font-medium">Slide {currentIndex + 1} of {slides.length}</span>
+            <span>{Math.round(progress)}% complete</span>
+          </div>
+          <Progress value={progress} className="h-1.5" />
+        </div>
+
+        {/* Slide content */}
+        <div className="flex-1 overflow-y-auto px-6 md:px-12 py-8">
+          <div className="max-w-3xl mx-auto">
+            {/* Heading */}
+            <h2 className="text-2xl md:text-4xl font-bold mb-6 tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
+              <LatexRenderer>{slide.heading}</LatexRenderer>
+            </h2>
+
+            {/* Body */}
+            <div className="slide-prose text-base md:text-lg leading-relaxed text-foreground/85 mb-8">
+              <LatexRenderer>{slide.body}</LatexRenderer>
+            </div>
+
+            {/* Key Terms */}
+            {slide.keyTerms?.length > 0 && (
+              <div className="mb-8 rounded-xl border border-border bg-card p-5">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
+                  <span className="h-1 w-1 rounded-full bg-secondary" />
+                  Key Terms
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {slide.keyTerms.map((kt, i) => (
+                    <Tooltip key={i}>
+                      <TooltipTrigger asChild>
+                        <span className="inline-flex items-center rounded-lg bg-primary/8 px-3 py-1.5 text-sm font-medium text-primary cursor-help border border-primary/15 hover:bg-primary/12 transition-colors">
+                          <LatexRenderer>{kt.term}</LatexRenderer>
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom" className="max-w-xs text-sm">
+                        <LatexRenderer>{kt.definition}</LatexRenderer>
+                      </TooltipContent>
+                    </Tooltip>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Visual Prompt */}
+            {slide.visualPrompt && (
+              <div className="rounded-xl border border-dashed border-border bg-muted/30 p-5 flex items-start gap-4">
+                <div className="flex-shrink-0 rounded-lg bg-accent/15 p-2.5">
+                  <Image className="h-5 w-5 text-accent" />
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">Visual Reference</p>
+                  <p className="text-sm text-foreground/70 leading-relaxed">{slide.visualPrompt}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <div className="border-t bg-card px-6 py-3 flex items-center justify-between">
+          <Button
+            variant="outline"
+            onClick={() => onNavigate(currentIndex - 1)}
+            disabled={currentIndex === 0}
+            className="gap-2 text-sm"
+          >
+            <ChevronLeft className="h-4 w-4" /> Previous
+          </Button>
+
+          {/* Progress dots — mobile only */}
+          <div className="flex gap-1.5 lg:hidden">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => onNavigate(i)}
+                className={`h-2 rounded-full transition-all ${
+                  i === currentIndex
+                    ? "w-6 bg-primary"
+                    : i < currentIndex
+                    ? "w-2 bg-secondary/50"
+                    : "w-2 bg-muted-foreground/25 hover:bg-muted-foreground/40"
+                }`}
+              />
+            ))}
+          </div>
+
+          <Button
+            onClick={() => onNavigate(currentIndex + 1)}
+            className="gap-2 text-sm"
+            style={currentIndex === slides.length - 1 ? { background: "var(--tutor-gradient)" } : undefined}
+          >
+            {currentIndex === slides.length - 1 ? "Take Quiz" : "Next"}
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );
