@@ -129,8 +129,8 @@ const Index = () => {
               <GraduationCap className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="font-bold text-sm tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>AI Live Tutor</h1>
-              <p className="text-[11px] text-muted-foreground">K-12 & College Prep</p>
+              <h1 className="font-bold text-sm tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>Setu-AI</h1>
+              <p className="text-[11px] text-muted-foreground">Your Learning Bridge 🌉</p>
             </div>
           </div>
 
