@@ -1,9 +1,10 @@
-import React from "react";
-import { ChevronLeft, ChevronRight, Image, BookOpen } from "lucide-react";
+import React, { useState } from "react";
+import { ChevronLeft, ChevronRight, Image, BookOpen, ListChecks } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import LatexRenderer from "@/components/LatexRenderer";
+import TaskBreakdown from "@/components/TaskBreakdown";
 import type { Slide } from "@/types/lesson";
 
 interface SlideViewerProps {
@@ -14,6 +15,7 @@ interface SlideViewerProps {
 
 const SlideViewer: React.FC<SlideViewerProps> = ({ slides, currentIndex, onNavigate }) => {
   const slide = slides[currentIndex];
+  const [showBreakdown, setShowBreakdown] = useState(false);
   if (!slide) return null;
 
   const progress = ((currentIndex + 1) / slides.length) * 100;
@@ -64,7 +66,18 @@ const SlideViewer: React.FC<SlideViewerProps> = ({ slides, currentIndex, onNavig
         <div className="px-6 pt-4 pb-0">
           <div className="flex items-center justify-between text-xs text-muted-foreground mb-1.5">
             <span className="font-medium">Slide {currentIndex + 1} of {slides.length}</span>
-            <span>{Math.round(progress)}% complete</span>
+            <div className="flex items-center gap-3">
+              <Button
+                variant={showBreakdown ? "default" : "outline"}
+                size="sm"
+                className="gap-1.5 text-[11px] h-7 px-2.5"
+                onClick={() => setShowBreakdown(!showBreakdown)}
+              >
+                <ListChecks className="h-3 w-3" />
+                Task Breakdown
+              </Button>
+              <span>{Math.round(progress)}% complete</span>
+            </div>
           </div>
           <Progress value={progress} className="h-1.5" />
         </div>
@@ -72,6 +85,10 @@ const SlideViewer: React.FC<SlideViewerProps> = ({ slides, currentIndex, onNavig
         {/* Slide content */}
         <div className="flex-1 overflow-y-auto px-6 md:px-12 py-8">
           <div className="max-w-3xl mx-auto">
+            {/* Task Breakdown for neurodiversity support */}
+            {showBreakdown && (
+              <TaskBreakdown slides={slides} currentIndex={currentIndex} onNavigate={onNavigate} />
+            )}
             {/* Heading */}
             <h2 className="text-2xl md:text-4xl font-bold mb-6 tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
               <LatexRenderer>{slide.heading}</LatexRenderer>
