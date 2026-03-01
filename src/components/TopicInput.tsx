@@ -30,9 +30,9 @@ const TopicInput: React.FC<TopicInputProps> = ({ onGenerate, isLoading }) => {
   ];
 
   const features = [
-    { icon: BookOpen, label: "Structured Slides", desc: "6 progressive concept slides" },
-    { icon: Lightbulb, label: "Socratic Tutoring", desc: "AI-guided doubt resolution" },
-    { icon: Award, label: "Concept Assessment", desc: "MCQ-based knowledge checks" },
+    { icon: BookOpen, label: "Structured Slides", desc: "Progressive concept slides with key terms" },
+    { icon: Lightbulb, label: "Socratic Tutoring", desc: "AI guides you — never gives away the answer" },
+    { icon: Award, label: "Adaptive Assessment", desc: "MCQs that meet you at your level" },
   ];
 
   return (
@@ -41,14 +41,14 @@ const TopicInput: React.FC<TopicInputProps> = ({ onGenerate, isLoading }) => {
       <div className="mb-10 text-center max-w-2xl mx-auto">
         <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-6 shadow-sm">
           <Sparkles className="h-3.5 w-3.5 text-secondary" />
-          AI-Powered Learning Platform
+          Setu-AI · Your Learning Bridge
         </div>
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-4 text-foreground" style={{ fontFamily: 'var(--font-display)' }}>
-          Master any concept,<br />
-          <span className="text-secondary">step by step.</span>
+          Bridge the gap to<br />
+          <span className="bg-clip-text text-transparent" style={{ backgroundImage: "var(--tutor-gradient)" }}>understanding.</span>
         </h1>
         <p className="text-base md:text-lg text-muted-foreground max-w-lg mx-auto leading-relaxed">
-          Enter a Science or Mathematics topic and receive an expertly structured lesson with interactive assessment — from Grade 1 through College Prep.
+          Enter any Science or Math topic — Setu-AI builds a guided lesson with Socratic tutoring, multilingual support, and adaptive assessments.
         </p>
       </div>
 
@@ -121,9 +121,9 @@ const TopicInput: React.FC<TopicInputProps> = ({ onGenerate, isLoading }) => {
       {/* Feature cards */}
       <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl w-full">
         {features.map((f) => (
-          <div key={f.label} className="flex flex-col items-center text-center rounded-xl border border-border bg-card p-5 shadow-sm">
-            <div className="rounded-lg bg-muted p-2.5 mb-3">
-              <f.icon className="h-5 w-5 text-primary" />
+          <div key={f.label} className="group flex flex-col items-center text-center rounded-xl border border-border bg-card p-5 shadow-sm hover:shadow-md hover:border-primary/20 transition-all duration-200">
+            <div className="rounded-lg p-2.5 mb-3 transition-colors" style={{ background: "var(--tutor-gradient)" }}>
+              <f.icon className="h-5 w-5 text-white" />
             </div>
             <h3 className="text-sm font-semibold mb-1">{f.label}</h3>
             <p className="text-xs text-muted-foreground leading-relaxed">{f.desc}</p>
